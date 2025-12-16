@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Shader: Wood Burning Fireplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="glCanvas"></canvas>
+
+  <section class="hero" id="hero">
+    <div class="hero__card">
+      <span class="hero__badge">🔥 First time here</span>
+      <h1 class="hero__title">Animated Shader: Wood Burning Fireplace</h1>
+      <p class="hero__lead">
+        Sink into the glow of a real-time WebGL fireplace. The hero fills your screen on first visit so you can feel the heat before diving into the details.
+      </p>
+      <div class="hero__actions">
+        <button class="btn-primary" id="enterHero">Enter experience</button>
+        <button class="btn-ghost" id="skipHero">Skip intro</button>
+      </div>
+      <div class="hero__meta">
+        <span>⏱️ Runs in-browser</span>
+        <span>📱 Optimized for mobile + desktop</span>
+        <span>🌙 Fullscreen-ready</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
