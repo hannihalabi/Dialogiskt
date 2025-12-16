@@ -225,26 +225,3 @@ function render(time) {
 }
 
 requestAnimationFrame(render);
-
-// Hero gating: show full-screen hero on first visit (desktop + mobile)
-const hero = document.getElementById("hero");
-const enterHero = document.getElementById("enterHero");
-const skipHero = document.getElementById("skipHero");
-const HERO_KEY = "fireplaceHeroSeen";
-
-function hideHero() {
-  document.body.classList.remove("hero-active");
-  localStorage.setItem(HERO_KEY, "1");
-  hero.style.opacity = "0";
-  hero.style.visibility = "hidden";
-  setTimeout(() => hero.remove(), 500);
-}
-
-if (!localStorage.getItem(HERO_KEY)) {
-  document.body.classList.add("hero-active");
-} else {
-  hero.remove();
-}
-
-enterHero.addEventListener("click", hideHero);
-skipHero.addEventListener("click", hideHero);
