@@ -68,6 +68,34 @@ canvas {
   align-items: flex-start;
 }
 
+.hero-content {
+  max-width: 520px;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.hero-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 0.7rem;
+  color: rgba(247, 249, 255, 0.7);
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.hero-subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(247, 249, 255, 0.78);
+  max-width: 36ch;
+}
+
 #controls {
   position: fixed;
   top: 10px;
