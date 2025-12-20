@@ -1,8 +1,10 @@
 const canvas = document.getElementById("glCanvas");
 const gl = canvas.getContext("webgl2");
 if (!gl) {
-  console.error("WebGL 2 not supported");
-  document.body.innerHTML = "WebGL 2 is not supported in your browser.";
+  const fallbackMessage = document.body?.dataset?.webglFallback
+    || "WebGL 2 is not supported in your browser.";
+  console.error(fallbackMessage);
+  document.body.innerHTML = fallbackMessage;
 }
 
 const vertexShaderSource = `#version 300 es
@@ -202,14 +204,25 @@ gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
 let mouseX = 0, mouseY = 0;
+
 canvas.addEventListener("mousemove", (e) => {
   mouseX = e.clientX;
   mouseY = canvas.height - e.clientY; // Flip Y coordinate
 });
 
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.style.width = `${vw}px`;
+  canvas.style.height = `${vh}px`;
+  canvas.style.top = "0px";
+  canvas.style.left = "0px";
+
+  canvas.width = Math.round(vw * dpr);
+  canvas.height = Math.round(vh * dpr);
+
   gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
@@ -225,3 +238,143 @@ function render(time) {
 }
 
 requestAnimationFrame(render);
+
+const latestVideos = document.getElementById("latestVideos");
+const latestVideosStatus = document.getElementById("latestVideosStatus");
+
+if (latestVideos && latestVideosStatus) {
+  const channelId = latestVideos.dataset.channelId || "";
+  const maxResults = Number.parseInt(latestVideos.dataset.maxResults || "5", 10) || 5;
+  const loadingText = latestVideosStatus.dataset.loadingText || "Loading videos...";
+  const emptyText = latestVideosStatus.dataset.emptyText || "No videos found.";
+  const errorText = latestVideosStatus.dataset.errorText || "Unable to load videos.";
+
+  latestVideosStatus.textContent = loadingText;
+
+  const safeText = (value) => (value || "").trim();
+
+  const formatDate = (value) => {
+    if (!value) {
+      return "";
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+    return date.toLocaleDateString("sv-SE", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const buildCard = ({ title, url, thumbnail, date, videoId }) => {
+    const card = document.createElement("article");
+    card.className = "video-card";
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener";
+
+    const thumb = document.createElement("div");
+    thumb.className = "video-thumb";
+
+    const imageUrl = thumbnail || (videoId
+      ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+      : "");
+    if (imageUrl) {
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = title || "YouTube video";
+      img.loading = "lazy";
+      img.decoding = "async";
+      thumb.appendChild(img);
+    }
+
+    const meta = document.createElement("div");
+    meta.className = "video-meta";
+
+    const heading = document.createElement("h3");
+    heading.textContent = title || "Untitled video";
+    meta.appendChild(heading);
+
+    const formattedDate = formatDate(date);
+    if (formattedDate) {
+      const time = document.createElement("time");
+      time.dateTime = date;
+      time.textContent = formattedDate;
+      meta.appendChild(time);
+    }
+
+    link.append(thumb, meta);
+    card.appendChild(link);
+    return card;
+  };
+
+  const parseFeed = (xmlText) => {
+    const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+    const entries = Array.from(xml.querySelectorAll("entry"));
+    return entries.map((entry) => {
+      const title = safeText(entry.querySelector("title")?.textContent);
+      const videoId = safeText(entry.querySelector("yt\\:videoId")?.textContent)
+        || safeText(entry.querySelector("videoId")?.textContent);
+      const link = entry.querySelector("link[rel=\"alternate\"]")?.getAttribute("href")
+        || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : "");
+      const thumbnail = entry.querySelector("media\\:thumbnail")?.getAttribute("url") || "";
+      const published = safeText(entry.querySelector("published")?.textContent);
+      const updated = safeText(entry.querySelector("updated")?.textContent);
+      return {
+        title,
+        videoId,
+        url: link,
+        thumbnail,
+        date: published || updated,
+      };
+    }).filter((entry) => entry.url);
+  };
+
+  const fetchFeedText = async (url) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.text();
+  };
+
+  const loadLatestVideos = async () => {
+    if (!channelId) {
+      latestVideosStatus.textContent = errorText;
+      return;
+    }
+
+    const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`;
+
+    let xmlText = "";
+    try {
+      xmlText = await fetchFeedText(feedUrl);
+    } catch (error) {
+      try {
+        xmlText = await fetchFeedText(proxyUrl);
+      } catch (proxyError) {
+        latestVideosStatus.textContent = errorText;
+        return;
+      }
+    }
+
+    const videos = parseFeed(xmlText).slice(0, maxResults);
+    if (!videos.length) {
+      latestVideosStatus.textContent = emptyText;
+      return;
+    }
+
+    latestVideos.textContent = "";
+    videos.forEach((video) => {
+      latestVideos.appendChild(buildCard(video));
+    });
+    latestVideosStatus.classList.add("is-hidden");
+  };
+
+  loadLatestVideos();
+}

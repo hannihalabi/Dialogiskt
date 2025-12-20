@@ -1,19 +1,98 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Animated Shader: Wood Burning Fireplace</title>
+  <title>Animerad shader: Vedeldad brasa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <canvas id="glCanvas"></canvas>
+<body data-webgl-fallback="WebGL 2 stöds inte i din webbläsare.">
+  <section class="hero-screen">
+    <canvas id="glCanvas"></canvas>
+    <div class="container">
+    </div>
+  </section>
 
-  <div class="container">
-  </div>
+  <section class="logo-loop-section" aria-label="Samarbeten">
+    <div class="logo-loop-heading">
+      <p class="logo-label">Samarbeten</p>
+    </div>
+    <div class="logo-loop">
+      <div class="logo-loop-inner">
+        <div class="logo-track">
+          <div class="logo-item"><img src="Samarbeten/AFN.avif" alt="AFN" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Advokatbyra.png" alt="Advokatbyra" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Manclear.avif" alt="Manclear" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Nordplus.png" alt="Nordplus" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Worknode.webp" alt="Worknode" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/AFN.avif" alt="AFN" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Advokatbyra.png" alt="Advokatbyra" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Manclear.avif" alt="Manclear" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Nordplus.png" alt="Nordplus" loading="lazy"></div>
+          <div class="logo-item"><img src="Samarbeten/Worknode.webp" alt="Worknode" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section episode-section" aria-label="Senaste avsnittet">
+    <div class="info-card episode-card">
+      <div class="episode-header">
+        <h2>Senaste avsnittet</h2>
+        <p>Se senaste avsnittet på YouTube.</p>
+      </div>
+      <div class="episode-player">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/gQ6spcjpHYA"
+          title="Senaste avsnittet"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section videos-section" aria-label="Senaste videor">
+    <div class="info-card videos-card">
+      <div class="videos-header">
+        <h2>Senaste videor</h2>
+        <p>De senaste uppladdningarna från Dialogiskt.</p>
+      </div>
+      <div
+        class="videos-grid"
+        id="latestVideos"
+        data-channel-id="UCti8yWpHMDyv-pSuMyj1X-w"
+        data-max-results="5"
+      ></div>
+      <p
+        class="videos-status"
+        id="latestVideosStatus"
+        data-loading-text="Hämtar videor..."
+        data-empty-text="Inga videor hittades."
+        data-error-text="Kunde inte hämta videor just nu."
+        aria-live="polite"
+      >
+        Hämtar videor...
+      </p>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <div class="info-card info-grid">
+      <div class="info-tile">
+        <h3 class="podcast-title">Viktor De Almeida</h3>
+        <img class="podcast-image" src="Bild 6.jpeg" alt="Podcasten" loading="lazy">
+        <p>
+          Podcasten, ledd av Victor De Almeida, fokuserar på djupgående intervjuer och livsberättelser, ofta med personer från samhällets utkanter som före detta gängledare eller kontroversiella individer.
+        </p>
+      </div>
+    </div>
+  </section>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
   <script src="script.js"></script>
