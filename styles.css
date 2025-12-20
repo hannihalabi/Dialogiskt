@@ -470,4 +470,12 @@ button:active {
   .container {
     font-size: 0.8rem;
   }
+  .episode-card {
+    padding: 1.25rem;
+  }
+  .episode-player {
+    margin: 0 -0.75rem;
+    width: calc(100% + 1.5rem);
+    border-radius: 14px;
+  }
 }
