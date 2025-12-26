@@ -21,8 +21,15 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-webgl-fallback="WebGL 2 stöds inte i din webbläsare.">
+  <header class="site-header">
+    <img class="site-logo" src="dialogiskt-logo.jpeg" alt="Dialogiskt logotyp">
+  </header>
   <section class="hero-screen">
-    <canvas id="glCanvas"></canvas>
+    <video class="hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+      <source src="dialogiskt-intro.mp4" type="video/mp4">
+      <source src="dialogiskt-intro.MOV" type="video/quicktime">
+    </video>
+    <button class="sound-toggle" type="button">Sound on</button>
     <div class="container">
     </div>
   </section>
@@ -49,25 +56,6 @@
     </div>
   </section>
 
-  <section class="info-section episode-section" aria-label="Senaste avsnittet">
-    <div class="info-card episode-card">
-      <div class="episode-header">
-        <h2>Senaste avsnittet</h2>
-        <p>Se senaste avsnittet på YouTube.</p>
-      </div>
-      <div class="episode-player">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/gQ6spcjpHYA"
-          title="Senaste avsnittet"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </div>
-  </section>
-
   <section class="info-section videos-section" aria-label="Senaste videor">
     <div class="info-card videos-card">
       <div class="videos-header">
@@ -80,6 +68,9 @@
         data-channel-id="UCti8yWpHMDyv-pSuMyj1X-w"
         data-max-results="5"
       ></div>
+      <button class="videos-more" id="videosMore" type="button" aria-controls="latestVideos" hidden>
+        Visa fler
+      </button>
       <p
         class="videos-status"
         id="latestVideosStatus"
@@ -97,7 +88,7 @@
     <div class="info-card info-grid">
       <div class="info-tile">
         <h3 class="podcast-title">Viktor De Almeida</h3>
-        <img class="podcast-image" src="Bild 6.jpeg" alt="Podcasten" loading="lazy">
+        <img class="podcast-image" src="about-pic.webp" alt="Viktor De Almeida" loading="lazy">
         <p>
           Podcasten, ledd av Victor De Almeida, fokuserar på djupgående intervjuer och livsberättelser, ofta med personer från samhällets utkanter som före detta gängledare eller kontroversiella individer.
         </p>
@@ -105,7 +96,6 @@
     </div>
   </section>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

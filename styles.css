@@ -21,11 +21,64 @@ body, html {
   position: relative;
 }
 
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  z-index: 5;
+  transition: opacity 0.2s ease;
+}
+
+.site-header.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.site-logo {
+  display: block;
+  width: clamp(90px, 12vw, 140px);
+  height: auto;
+  border-radius: 24px;
+}
+
+.sound-toggle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  padding: 0.65rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.sound-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .hero-screen {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: #001 url("Bild 3.jpg") center top / cover no-repeat;
+  background: #001;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .hero-screen::after {
@@ -38,17 +91,6 @@ body, html {
     linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.35));
   mix-blend-mode: multiply;
   z-index: 3;
-}
-
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.8;
 }
 
 .container {
@@ -325,6 +367,26 @@ button:active {
   display: none;
 }
 
+.videos-more {
+  align-self: start;
+  justify-self: center;
+  padding: 0.7rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #f7f9ff;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.videos-more:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -363,7 +425,7 @@ button:active {
 }
 
 .logo-loop-section {
-  margin: clamp(1.5rem, 3vw, 2.5rem) auto clamp(3rem, 6vw, 4rem) auto;
+  margin: clamp(3rem, 6vw, 4.5rem) auto clamp(3rem, 6vw, 4rem) auto;
   display: grid;
   gap: 0.75rem;
 }
@@ -378,7 +440,7 @@ button:active {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.24em;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: rgba(247, 249, 255, 0.6);
 }
 
@@ -469,6 +531,13 @@ button:active {
   }
   .container {
     font-size: 0.8rem;
+    padding: 1rem;
+  }
+  .info-section,
+  .logo-loop-inner,
+  .logo-loop-heading {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   .episode-card {
     padding: 1.25rem;
