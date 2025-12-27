@@ -46,19 +46,21 @@ if (heroVideo && heroSection && "IntersectionObserver" in window) {
   heroObserver.observe(heroSection);
 }
 
-const latestVideos = document.getElementById("latestVideos");
-const latestVideosStatus = document.getElementById("latestVideosStatus");
+const videosGrid = document.getElementById("videosGrid");
+const videosStatus = document.getElementById("videosStatus");
 const videosMoreButton = document.getElementById("videosMore");
+const videosTabs = Array.from(document.querySelectorAll(".videos-tab"));
+const spotifyMoreButton = document.getElementById("spotifyMore");
+const spotifyEpisodes = document.getElementById("spotifyEpisodes");
 
-if (latestVideos && latestVideosStatus) {
-  const channelId = latestVideos.dataset.channelId || "";
-  const maxResults = Number.parseInt(latestVideos.dataset.maxResults || "5", 10) || 5;
-  const loadingText = latestVideosStatus.dataset.loadingText || "Loading videos...";
-  const emptyText = latestVideosStatus.dataset.emptyText || "No videos found.";
-  const errorText = latestVideosStatus.dataset.errorText || "Unable to load videos.";
-  const initialCount = 2;
+if (videosGrid && videosStatus) {
+  const maxResults = Number.parseInt(videosGrid.dataset.maxResults || "5", 10) || 5;
+  const loadingText = videosStatus.dataset.loadingText || "Loading videos...";
+  const emptyText = videosStatus.dataset.emptyText || "No videos found.";
+  const errorText = videosStatus.dataset.errorText || "Unable to load videos.";
 
-  latestVideosStatus.textContent = loadingText;
+  const videoCache = new Map();
+  const expandedFeeds = new Set();
 
   const safeText = (value) => (value || "").trim();
 
@@ -121,87 +123,138 @@ if (latestVideos && latestVideosStatus) {
     return card;
   };
 
-  const parseFeed = (xmlText) => {
-    const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-    const entries = Array.from(xml.querySelectorAll("entry"));
-    return entries.map((entry) => {
-      const title = safeText(entry.querySelector("title")?.textContent);
-      const videoId = safeText(entry.querySelector("yt\\:videoId")?.textContent)
-        || safeText(entry.querySelector("videoId")?.textContent);
-      const link = entry.querySelector("link[rel=\"alternate\"]")?.getAttribute("href")
-        || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : "");
-      const thumbnail = entry.querySelector("media\\:thumbnail")?.getAttribute("url") || "";
-      const published = safeText(entry.querySelector("published")?.textContent);
-      const updated = safeText(entry.querySelector("updated")?.textContent);
+  const normalizeVideos = (payload) => {
+    const rawVideos = Array.isArray(payload) ? payload : payload?.videos;
+    return Array.isArray(rawVideos) ? rawVideos.map((entry) => {
+      const title = safeText(entry?.title);
+      const videoId = safeText(entry?.videoId);
+      const url = safeText(entry?.url) || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : "");
+      const thumbnail = safeText(entry?.thumbnail) || (videoId
+        ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+        : "");
+      const date = safeText(entry?.date);
       return {
         title,
         videoId,
-        url: link,
+        url,
         thumbnail,
-        date: published || updated,
+        date,
       };
-    }).filter((entry) => entry.url);
+    }).filter((entry) => entry.url) : [];
   };
 
-  const fetchFeedText = async (url) => {
-    const response = await fetch(url);
+  const fetchVideos = async (feedUrl) => {
+    if (videoCache.has(feedUrl)) {
+      return videoCache.get(feedUrl);
+    }
+    const separator = feedUrl.includes("?") ? "&" : "?";
+    const requestUrl = `${feedUrl}${separator}v=${Date.now()}`;
+    const response = await fetch(requestUrl, { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    return response.text();
+    const payload = await response.json();
+    const videos = normalizeVideos(payload).slice(0, maxResults);
+    videoCache.set(feedUrl, videos);
+    return videos;
   };
 
-  const loadLatestVideos = async () => {
-    if (!channelId) {
-      latestVideosStatus.textContent = errorText;
+  const getTabConfig = (tab) => {
+    const feedUrl = tab?.dataset?.feedUrl || "latest-videos.json";
+    const initialCount = Number.parseInt(tab?.dataset?.initialCount || "1", 10) || 1;
+    return { feedUrl, initialCount };
+  };
+
+  const renderVideos = (feedUrl, videos, initialCount) => {
+    const isExpanded = expandedFeeds.has(feedUrl);
+    const visibleCount = isExpanded ? videos.length : Math.min(initialCount, videos.length);
+    const visibleVideos = videos.slice(0, visibleCount);
+    const remainingVideos = videos.slice(visibleCount);
+
+    videosGrid.textContent = "";
+    visibleVideos.forEach((video) => {
+      videosGrid.appendChild(buildCard(video));
+    });
+    videosStatus.classList.add("is-hidden");
+
+    if (videosMoreButton) {
+      videosMoreButton.hidden = remainingVideos.length === 0;
+      videosMoreButton.onclick = null;
+      if (remainingVideos.length > 0) {
+        videosMoreButton.onclick = () => {
+          expandedFeeds.add(feedUrl);
+          renderVideos(feedUrl, videos, initialCount);
+        };
+      }
+    }
+  };
+
+  const setActiveTab = async (tab) => {
+    if (!tab) {
+      return;
+    }
+    videosTabs.forEach((button) => {
+      const isActive = button === tab;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+
+    const { feedUrl, initialCount } = getTabConfig(tab);
+    videosStatus.textContent = loadingText;
+    videosStatus.classList.remove("is-hidden");
+    videosGrid.textContent = "";
+    if (videosMoreButton) {
+      videosMoreButton.hidden = true;
+      videosMoreButton.onclick = null;
+    }
+
+    let videos = [];
+    try {
+      videos = await fetchVideos(feedUrl);
+    } catch (error) {
+      videosStatus.textContent = errorText;
       return;
     }
 
-    const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`;
-
-    let xmlText = "";
-    try {
-      xmlText = await fetchFeedText(feedUrl);
-    } catch (error) {
-      try {
-        xmlText = await fetchFeedText(proxyUrl);
-      } catch (proxyError) {
-        latestVideosStatus.textContent = errorText;
-        return;
-      }
-    }
-
-    const videos = parseFeed(xmlText).slice(0, maxResults);
     if (!videos.length) {
-      latestVideosStatus.textContent = emptyText;
+      videosStatus.textContent = emptyText;
       if (videosMoreButton) {
         videosMoreButton.hidden = true;
       }
       return;
     }
 
-    const initialVideos = videos.slice(0, initialCount);
-    const remainingVideos = videos.slice(initialCount);
-
-    latestVideos.textContent = "";
-    initialVideos.forEach((video) => {
-      latestVideos.appendChild(buildCard(video));
-    });
-    latestVideosStatus.classList.add("is-hidden");
-
-    if (videosMoreButton) {
-      videosMoreButton.hidden = remainingVideos.length === 0;
-      if (remainingVideos.length > 0) {
-        videosMoreButton.addEventListener("click", () => {
-          remainingVideos.forEach((video) => {
-            latestVideos.appendChild(buildCard(video));
-          });
-          videosMoreButton.hidden = true;
-        }, { once: true });
-      }
-    }
+    renderVideos(feedUrl, videos, initialCount);
   };
 
-  loadLatestVideos();
+  if (videosTabs.length) {
+    videosTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        setActiveTab(tab);
+      });
+    });
+  }
+
+  const defaultTab = videosTabs.find((tab) => tab.classList.contains("is-active")) || videosTabs[0];
+  setActiveTab(defaultTab);
+}
+
+if (spotifyMoreButton && spotifyEpisodes) {
+  const extraEpisodes = Array.from(spotifyEpisodes.querySelectorAll("[data-spotify-extra]"));
+  if (!extraEpisodes.length) {
+    spotifyMoreButton.hidden = true;
+  } else {
+    const setSpotifyExpanded = (isExpanded) => {
+      extraEpisodes.forEach((episode) => {
+        episode.hidden = !isExpanded;
+      });
+      spotifyMoreButton.hidden = isExpanded;
+      spotifyMoreButton.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+    };
+
+    setSpotifyExpanded(false);
+    spotifyMoreButton.addEventListener("click", () => {
+      setSpotifyExpanded(true);
+    });
+  }
 }

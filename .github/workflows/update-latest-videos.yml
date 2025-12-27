@@ -1,0 +1,49 @@
+name: Update latest videos
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Fetch latest videos
+        run: >-
+          python scripts/fetch_youtube_feed.py
+          --channel-id UCti8yWpHMDyv-pSuMyj1X-w
+          --output latest-videos.json
+          --max-results 5
+
+      - name: Fetch popular videos
+        if: env.YOUTUBE_API_KEY != ''
+        run: >-
+          python scripts/fetch_youtube_popular.py
+          --channel-id UCti8yWpHMDyv-pSuMyj1X-w
+          --output popular-videos.json
+          --max-results 5
+
+      - name: Commit updates
+        run: |
+          if git status --porcelain | grep -qE "(latest-videos.json|popular-videos.json)"; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add latest-videos.json popular-videos.json
+            git commit -m "Update latest videos"
+            git push
+          else
+            echo "No changes to commit."
+          fi

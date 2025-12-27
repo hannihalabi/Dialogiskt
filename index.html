@@ -56,24 +56,49 @@
     </div>
   </section>
 
-  <section class="info-section videos-section" aria-label="Senaste videor">
+  <section class="info-section videos-section" aria-label="Senaste avsnittet">
     <div class="info-card videos-card">
       <div class="videos-header">
-        <h2>Senaste videor</h2>
+        <h2>Nytt hos Dialogiskt</h2>
         <p>De senaste uppladdningarna från Dialogiskt.</p>
+      </div>
+      <div class="videos-tabs" role="tablist" aria-label="Välj kategori">
+        <button
+          class="videos-tab is-active"
+          id="videosTabLatest"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="videosGrid"
+          data-feed-url="latest-videos.json"
+          data-initial-count="1"
+        >
+          Senaste
+        </button>
+        <button
+          class="videos-tab"
+          id="videosTabPopular"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="videosGrid"
+          data-feed-url="popular-videos.json"
+          data-initial-count="1"
+        >
+          Populärast
+        </button>
       </div>
       <div
         class="videos-grid"
-        id="latestVideos"
-        data-channel-id="UCti8yWpHMDyv-pSuMyj1X-w"
+        id="videosGrid"
         data-max-results="5"
       ></div>
-      <button class="videos-more" id="videosMore" type="button" aria-controls="latestVideos" hidden>
+      <button class="videos-more" id="videosMore" type="button" aria-controls="videosGrid" hidden>
         Visa fler
       </button>
       <p
         class="videos-status"
-        id="latestVideosStatus"
+        id="videosStatus"
         data-loading-text="Hämtar videor..."
         data-empty-text="Inga videor hittades."
         data-error-text="Kunde inte hämta videor just nu."
@@ -84,14 +109,163 @@
     </div>
   </section>
 
+  <section class="info-section" aria-label="Senaste avsnittet på Spotify">
+    <div class="info-card episode-card">
+      <div class="episode-header">
+        <h2>Senaste avsnittet på Spotify</h2>
+        <p>Lyssna direkt på senaste samtalet från Dialogiskt.</p>
+      </div>
+      <div class="spotify-episodes" id="spotifyEpisodes">
+        <div class="episode-player spotify-embed">
+          <iframe
+            src="https://open.spotify.com/embed/episode/0Rhf5uLRSMkYSvHXLDYAlu?utm_source=generator"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            title="Dialogiskt - senaste avsnittet"
+          ></iframe>
+        </div>
+        <div class="episode-player spotify-embed" data-spotify-extra hidden>
+          <iframe
+            src="https://open.spotify.com/embed/episode/6W3wQa1ziKOKiTnfy907Fs?utm_source=generator"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            title="Dialogiskt - avsnitt två"
+          ></iframe>
+        </div>
+        <div class="episode-player spotify-embed" data-spotify-extra hidden>
+          <iframe
+            src="https://open.spotify.com/embed/episode/1Hjr1HZW6Z8mRK16ZiNwuT?utm_source=generator"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            title="Dialogiskt - avsnitt tre"
+          ></iframe>
+        </div>
+      </div>
+      <button class="videos-more spotify-more" id="spotifyMore" type="button" aria-controls="spotifyEpisodes" aria-expanded="false">
+        Visa fler
+      </button>
+    </div>
+  </section>
+
   <section class="info-section">
-    <div class="info-card info-grid">
-      <div class="info-tile">
-        <h3 class="podcast-title">Viktor De Almeida</h3>
-        <img class="podcast-image" src="about-pic.webp" alt="Viktor De Almeida" loading="lazy">
-        <p>
-          Podcasten, ledd av Victor De Almeida, fokuserar på djupgående intervjuer och livsberättelser, ofta med personer från samhällets utkanter som före detta gängledare eller kontroversiella individer.
-        </p>
+    <div class="info-card about-card">
+      <div class="about-header">
+        <h2>Om podden</h2>
+        <p>Dialogiskt är samtal som går längre än rubrikerna.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-copy">
+          <p>
+            Podcasten, ledd av Viktor De Almeida, fokuserar på djupgående intervjuer och livsberättelser, ofta med personer från samhällets utkanter som före detta gängledare eller kontroversiella individer.
+          </p>
+          <p>
+            Målet är att skapa förståelse, nyanser och samtal som stannar kvar även efter att avsnittet är slut.
+          </p>
+        </div>
+        <div class="info-tile about-host">
+          <h3 class="podcast-title">Viktor De Almeida</h3>
+          <img class="podcast-image" src="about-pic.webp" alt="Viktor De Almeida" loading="lazy">
+          <p class="about-role">Programledare &amp; grundare</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section" aria-label="Utdrag från avsnitt">
+    <div class="info-card quotes-card">
+      <div class="quotes-header">
+        <h2>Utdrag från avsnitt</h2>
+        <p>Raka, ofiltrerade citat från samtal som berört mest.</p>
+      </div>
+      <div class="quotes-carousel" role="list">
+        <blockquote class="quote-card" role="listitem">
+          <p>“När du växer upp i fel kvarter måste du skapa din egen karta.”</p>
+          <cite>— Avsnitt 52</cite>
+        </blockquote>
+        <blockquote class="quote-card" role="listitem">
+          <p>“Det som räddade mig var att någon ställde rätt frågor.”</p>
+          <cite>— Avsnitt 39</cite>
+        </blockquote>
+        <blockquote class="quote-card" role="listitem">
+          <p>“Vi pratar om ansvar, men också om varför det är så svårt.”</p>
+          <cite>— Avsnitt 44</cite>
+        </blockquote>
+        <blockquote class="quote-card" role="listitem">
+          <p>“Ingen hör dig om du inte vågar berätta hela historien.”</p>
+          <cite>— Avsnitt 27</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section" aria-label="Nyhetsbrev">
+    <div class="info-card newsletter-card">
+      <div class="newsletter-header">
+        <h2>Nyhetsbrev</h2>
+        <p>Få nya avsnitt, bakom kulisserna och exklusiva frågor i din inkorg.</p>
+      </div>
+      <form class="newsletter-form">
+        <label class="newsletter-field">
+          <span>E-postadress</span>
+          <input type="email" name="email" placeholder="din@email.se" autocomplete="email" required>
+        </label>
+        <label class="newsletter-consent">
+          <input type="checkbox" name="consent" required>
+          <span>Jag godkänner att Dialogiskt skickar uppdateringar.</span>
+        </label>
+        <button class="newsletter-button" type="submit">Prenumerera</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="info-section" aria-label="Press och media">
+    <div class="info-card press-card">
+      <div class="press-header">
+        <h2>Press &amp; media-kit</h2>
+        <p>Hitta logotyper, pressbilder och kontaktvägar.</p>
+      </div>
+      <div class="press-grid">
+        <div class="press-item">
+          <h3>Media-kit</h3>
+          <p>Logotyper, färger och pressbilder samlade på ett ställe.</p>
+          <a class="press-button" href="#" role="button">Begär media-kit</a>
+        </div>
+        <div class="press-item">
+          <h3>Presskontakt</h3>
+          <p>För intervjuer, samarbeten och event.</p>
+          <a class="press-link" href="mailto:press@dialogiskt.se">press@dialogiskt.se</a>
+        </div>
+        <div class="press-item">
+          <h3>Statistik</h3>
+          <p>Lyssnarsiffror och målgruppsinsikter för partners.</p>
+          <a class="press-button" href="#" role="button">Se statistik</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section" aria-label="Stöd dialogiskt">
+    <div class="info-card support-card">
+      <div class="support-header">
+        <h2>Stöd Dialogiskt</h2>
+        <p>Hjälp oss fortsätta göra modiga och viktiga samtal.</p>
+      </div>
+      <div class="support-grid">
+        <div class="support-item">
+          <h3>Patreon</h3>
+          <p>Få exklusiva klipp, frågestunder och tidig access.</p>
+          <a class="support-button" href="https://www.patreon.com" target="_blank" rel="noopener">Bli medlem</a>
+        </div>
+        <div class="support-item">
+          <h3>Swish</h3>
+          <p>Engångsstöd för att finansiera vårt arbete.</p>
+          <span class="support-note">Swish: 123 456 78 90</span>
+        </div>
+        <div class="support-item">
+          <h3>Bli sponsor!</h3>
+          <p>Vill du stötta som partner? Vi berättar gärna mer.</p>
+          <a class="support-button" href="mailto:partners@dialogiskt.se">Kontakta oss</a>
+        </div>
       </div>
     </div>
   </section>
