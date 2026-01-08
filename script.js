@@ -288,8 +288,9 @@ if (spotifyMoreButton && spotifyEpisodes) {
 
 const quotesCarousel = document.querySelector(".quotes-carousel");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const isSmallScreen = window.matchMedia("(max-width: 768px)");
 
-if (quotesCarousel && !prefersReducedMotion.matches) {
+if (quotesCarousel && !prefersReducedMotion.matches && !isSmallScreen.matches) {
   const quoteItems = Array.from(quotesCarousel.children);
   if (quoteItems.length > 1 && !quotesCarousel.dataset.looping) {
     const track = document.createElement("div");

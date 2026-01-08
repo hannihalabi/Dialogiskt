@@ -1278,4 +1278,36 @@ section + section {
     width: calc(100% + 1.5rem);
     border-radius: 14px;
   }
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .about-sequence {
+    gap: 0.75rem;
+  }
+  .about-sequence li {
+    grid-area: auto;
+    opacity: 1;
+    animation: none;
+  }
+  .videos-more,
+  .press-button,
+  .support-button,
+  .newsletter-button {
+    animation: none;
+  }
+  .videos-more::after,
+  .press-button::after,
+  .support-button::after,
+  .newsletter-button::after,
+  .stat-item::after,
+  .videos-tab.is-active::after {
+    animation: none;
+    opacity: 0;
+  }
+  .quotes-carousel.is-looping .quotes-track {
+    animation: none;
+    transform: none;
+  }
 }
