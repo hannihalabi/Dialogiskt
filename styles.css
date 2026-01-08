@@ -298,6 +298,34 @@ section + section {
   text-align: center;
 }
 
+.booking-card {
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  text-align: center;
+}
+
+.booking-header p {
+  margin: 0 auto;
+  color: rgba(247, 249, 255, 0.75);
+  max-width: 60ch;
+}
+
+.booking-meta {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(247, 249, 255, 0.6);
+}
+
+.booking-image {
+  display: block;
+  width: min(100%, 420px);
+  margin: 0 auto;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
