@@ -1,5 +1,27 @@
 const heroVideo = document.querySelector(".hero-video");
 const soundToggle = document.querySelector(".sound-toggle");
+const heroSources = heroVideo
+  ? Array.from(heroVideo.querySelectorAll('source[type="video/mp4"]'))
+      .map((source) => source.getAttribute("src"))
+      .filter(Boolean)
+  : [];
+const canPlayMp4 = heroVideo ? heroVideo.canPlayType("video/mp4") : "";
+
+if (heroVideo && heroSources.length > 1 && canPlayMp4 !== "") {
+  heroVideo.loop = false;
+  let heroIndex = 0;
+  const setHeroSource = (index) => {
+    heroIndex = (index + heroSources.length) % heroSources.length;
+    heroVideo.src = heroSources[heroIndex];
+    heroVideo.load();
+    heroVideo.play().catch(() => {});
+  };
+
+  setHeroSource(0);
+  heroVideo.addEventListener("ended", () => {
+    setHeroSource(heroIndex + 1);
+  });
+}
 
 if (heroVideo && soundToggle) {
   soundToggle.addEventListener("click", async () => {
@@ -240,21 +262,78 @@ if (videosGrid && videosStatus) {
 }
 
 if (spotifyMoreButton && spotifyEpisodes) {
-  const extraEpisodes = Array.from(spotifyEpisodes.querySelectorAll("[data-spotify-extra]"));
-  if (!extraEpisodes.length) {
+  const allEpisodes = Array.from(spotifyEpisodes.querySelectorAll(".episode-player"));
+  const initialCount = 3;
+
+  const setSpotifyExpanded = (isExpanded) => {
+    allEpisodes.forEach((episode, index) => {
+      episode.hidden = !isExpanded && index >= initialCount;
+    });
+    const hasHidden = allEpisodes.length > initialCount;
+    spotifyMoreButton.hidden = isExpanded || !hasHidden;
+    spotifyMoreButton.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+  };
+
+  if (!allEpisodes.length) {
     spotifyMoreButton.hidden = true;
   } else {
-    const setSpotifyExpanded = (isExpanded) => {
-      extraEpisodes.forEach((episode) => {
-        episode.hidden = !isExpanded;
+    setSpotifyExpanded(false);
+    if (allEpisodes.length > initialCount) {
+      spotifyMoreButton.addEventListener("click", () => {
+        setSpotifyExpanded(true);
       });
-      spotifyMoreButton.hidden = isExpanded;
-      spotifyMoreButton.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+    }
+  }
+}
+
+const quotesCarousel = document.querySelector(".quotes-carousel");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+if (quotesCarousel && !prefersReducedMotion.matches) {
+  const quoteItems = Array.from(quotesCarousel.children);
+  if (quoteItems.length > 1 && !quotesCarousel.dataset.looping) {
+    quoteItems.forEach((item) => {
+      quotesCarousel.appendChild(item.cloneNode(true));
+    });
+    quotesCarousel.dataset.looping = "true";
+    quotesCarousel.classList.add("is-looping");
+
+    let lastTime = null;
+    let rafId = null;
+    const speed = 0.04;
+
+    const step = (timestamp) => {
+      if (lastTime === null) {
+        lastTime = timestamp;
+      }
+      const delta = timestamp - lastTime;
+      lastTime = timestamp;
+      quotesCarousel.scrollLeft += delta * speed;
+      const resetPoint = quotesCarousel.scrollWidth / 2;
+      if (quotesCarousel.scrollLeft >= resetPoint) {
+        quotesCarousel.scrollLeft -= resetPoint;
+      }
+      rafId = window.requestAnimationFrame(step);
     };
 
-    setSpotifyExpanded(false);
-    spotifyMoreButton.addEventListener("click", () => {
-      setSpotifyExpanded(true);
-    });
+    const start = () => {
+      if (!rafId) {
+        lastTime = null;
+        rafId = window.requestAnimationFrame(step);
+      }
+    };
+
+    const stop = () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    };
+
+    start();
+    quotesCarousel.addEventListener("mouseenter", stop);
+    quotesCarousel.addEventListener("mouseleave", start);
+    quotesCarousel.addEventListener("focusin", stop);
+    quotesCarousel.addEventListener("focusout", start);
   }
 }
