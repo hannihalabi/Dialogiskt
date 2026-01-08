@@ -320,9 +320,13 @@ section + section {
 
 .booking-image {
   display: block;
-  width: min(100%, 420px);
+  width: 100%;
+  max-width: 420px;
+  height: clamp(180px, 38vw, 240px);
   margin: 0 auto;
   border-radius: 14px;
+  object-fit: cover;
+  object-position: center;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
@@ -1121,6 +1125,14 @@ section + section {
   margin: 0 auto;
   max-width: 1100px;
   padding: 0 clamp(1.25rem, 4vw, 3rem);
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+}
+
+.logo-loop-inner::-webkit-scrollbar {
+  display: none;
 }
 
 .logo-loop::before,
@@ -1152,6 +1164,16 @@ section + section {
   animation: logo-marquee 18s linear infinite;
   position: relative;
   z-index: 1;
+  will-change: transform;
+}
+
+.logo-loop.is-interactive .logo-track {
+  animation-play-state: paused;
+}
+
+.logo-loop.is-interactive .logo-loop-inner {
+  overflow-x: auto;
+  cursor: grabbing;
 }
 
 .logo-item {

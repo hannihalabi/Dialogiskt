@@ -342,3 +342,40 @@ if (revealTargets.length) {
     });
   }
 }
+
+const logoLoop = document.querySelector(".logo-loop");
+const logoLoopInner = document.querySelector(".logo-loop-inner");
+
+if (logoLoop && logoLoopInner) {
+  let resumeTimer = null;
+
+  const pauseLogoLoop = () => {
+    logoLoop.classList.add("is-interactive");
+    if (resumeTimer) {
+      window.clearTimeout(resumeTimer);
+      resumeTimer = null;
+    }
+  };
+
+  const scheduleResume = () => {
+    if (resumeTimer) {
+      window.clearTimeout(resumeTimer);
+    }
+    resumeTimer = window.setTimeout(() => {
+      logoLoop.classList.remove("is-interactive");
+    }, 1500);
+  };
+
+  logoLoopInner.addEventListener("pointerdown", pauseLogoLoop);
+  logoLoopInner.addEventListener("pointerup", scheduleResume);
+  logoLoopInner.addEventListener("pointercancel", scheduleResume);
+  logoLoopInner.addEventListener("mouseleave", scheduleResume);
+  logoLoopInner.addEventListener("touchstart", pauseLogoLoop, { passive: true });
+  logoLoopInner.addEventListener("touchend", scheduleResume);
+  logoLoopInner.addEventListener("touchcancel", scheduleResume);
+  logoLoopInner.addEventListener("wheel", pauseLogoLoop, { passive: true });
+  logoLoopInner.addEventListener("scroll", () => {
+    pauseLogoLoop();
+    scheduleResume();
+  });
+}
