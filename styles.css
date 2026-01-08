@@ -322,11 +322,9 @@ section + section {
   display: block;
   width: 100%;
   max-width: 420px;
-  height: clamp(180px, 38vw, 240px);
+  height: auto;
   margin: 0 auto;
   border-radius: 14px;
-  object-fit: cover;
-  object-position: center;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
